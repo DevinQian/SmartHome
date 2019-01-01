@@ -25,7 +25,6 @@ struct sockaddr_in skt_server;
 struct sockaddr_in skt_device;
 int quit = 0;
 
-
 void *thread_recv()
 {
     char recv[MAX_RECV_LEN] = {0};
