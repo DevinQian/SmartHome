@@ -1,3 +1,10 @@
+/* Copyright © 2019 Devin. All rights reserved.  
+** author: Devin Qian
+** email : qg0624@163.com
+** date  : 1/1/2019
+** description: create this file
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h> 
