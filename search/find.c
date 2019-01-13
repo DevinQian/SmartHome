@@ -42,7 +42,13 @@ void *thread_recv()
             if (ret >= 4) {
                if (recv[0] == 0x0A && recv[1] == 0x01 && recv[2] == 0x02) {
                    inet_ntop(AF_INET, &skt_device.sin_addr, device_ip, sizeof(device_ip));
-                   printf("device %s is online.\n", device_ip);
+                   
+                   printf("device ");
+		   if (recv[3] > 0) {
+		       printf("%c%u ", recv[4], recv[5]);
+                   }
+                   
+                   printf("ip:%s is online.\n", device_ip);
                }
             }
         }

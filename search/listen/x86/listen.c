@@ -16,6 +16,8 @@
 #include <stdlib.h>
 
 #define PUBLIC_PORT       9000
+#define DEVICE_TYPE       'X'
+#define DEVICE_ID	  0x01
 
 int main(int argc, char **argv)
 {
@@ -62,14 +64,17 @@ int main(int argc, char **argv)
                     printf("server %s is scanning...\n", server_ip);
                     /* online and response my IP address */
                     memset(rcv_buff, 0, sizeof(rcv_buff));
-                    /* HEAD(3 Bytes): 0x0A 0x01 0x02 -- last byte 0x02 means this device is online.
-                       LEN (1 Bytes): len            -- maybe carries useful data
+                    /* head(3 Bytes): 0x0A 0x01 0x02 -- last byte 0x02 means this device is online.
+                       len (1 Bytes): len            -- maybe carries useful data
+		       devid(2 Bytes): device type and device id. R means Raspberry Pi.
                     */
                     rcv_buff[0] = 0x0A;
                     rcv_buff[1] = 0x01;
                     rcv_buff[2] = 0x02;
-                    rcv_buff[3] = 0x00;
-                    rcv_num = sendto(sock_fd, rcv_buff, 4, 0, (struct sockaddr *)&server_addr, socket_len);
+                    rcv_buff[3] = 0x02;
+		    rcv_buff[4] = DEVICE_TYPE;
+		    rcv_buff[5] = DEVICE_ID;
+                    rcv_num = sendto(sock_fd, rcv_buff, 6, 0, (struct sockaddr *)&server_addr, socket_len);
                     if (rcv_num == -1) {
                         perror("fedback error!\n");
                     }

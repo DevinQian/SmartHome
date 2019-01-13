@@ -3,7 +3,7 @@ SOURCE = $(wildcard *.c)
 TARGETS = $(patsubst %.c, %, $(SOURCE))
 
 CC = gcc
-CROSS = arm-linux-gnueabihf-
+#CROSS = arm-linux-gnueabihf-
 
 
 all: find listen
