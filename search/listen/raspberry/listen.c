@@ -14,10 +14,9 @@
 #include <string.h>
 #include <unistd.h>
 #include <stdlib.h>
+#include "common.h"
 
-#define PUBLIC_PORT       9000
-#define DEVICE_TYPE       'R'
-#define DEVICE_ID	  0x01
+#define DEVICE_NAME "raspberry"
 
 int main(int argc, char **argv)
 {
@@ -28,6 +27,7 @@ int main(int argc, char **argv)
     int                socket_len   = 0;
     int                rcv_num      = -1;
     char               server_ip[INET_ADDRSTRLEN] = {0};
+    int                send_len     = 0;
 
     if ((sock_fd = socket(AF_INET, SOCK_DGRAM, 0)) < 0)
     {
@@ -51,7 +51,7 @@ int main(int argc, char **argv)
     
     while (1)
     {
-	printf("start listening...\n");
+        printf("listening...\n");
         rcv_num = recvfrom(sock_fd, rcv_buff, sizeof(rcv_buff), 0, (struct sockaddr *)&server_addr, &socket_len);
         if (rcv_num > 0) {
 	    printf("received num: %d\n", rcv_num);
@@ -60,21 +60,24 @@ int main(int argc, char **argv)
 	        /* HEAD(3 Bytes): 0x0A 0x01 0x01 -- last byte 0x01 means find which device is online.
 	           LEN (1 Bytes): len
                 */
-	        if (rcv_buff[0] == 0x0A && rcv_buff[1] == 0x01 && rcv_buff[2] == 0x01) {
+	        if (rcv_buff[0] == 0x0A && rcv_buff[1] == 0x01) {
                     printf("server %s is scanning...\n", server_ip);
                     /* online and response my IP address */
                     memset(rcv_buff, 0, sizeof(rcv_buff));
                     /* head(3 Bytes): 0x0A 0x01 0x02 -- last byte 0x02 means this device is online.
                        len (1 Bytes): len            -- maybe carries useful data
-		       devid(2 Bytes): device type and device id. R means Raspberry Pi.
+                       devid(2 Bytes): device type and device id. R means Raspberry Pi.
                     */
                     rcv_buff[0] = 0x0A;
-                    rcv_buff[1] = 0x01;
-                    rcv_buff[2] = 0x02;
-                    rcv_buff[3] = 0x02;
-		    rcv_buff[4] = DEVICE_TYPE;
-		    rcv_buff[5] = DEVICE_ID;
-                    rcv_num = sendto(sock_fd, rcv_buff, 6, 0, (struct sockaddr *)&server_addr, socket_len);
+                    rcv_buff[1] = 0x02;
+                    rcv_buff[2] = DEVICE_TYPE_CAMERA;
+                    rcv_buff[3] = 1;
+		    rcv_buff[4] = DEVICE_ONLINE;
+                    rcv_buff[5] = sizeof(DEVICE_NAME);
+                    memcpy(&rcv_buff[6], DEVICE_NAME, rcv_buff[5]);
+	            send_len    = rcv_buff[5] + 6;
+
+                    rcv_num = sendto(sock_fd, rcv_buff, send_len, 0, (struct sockaddr *)&server_addr, socket_len);
                     if (rcv_num == -1) {
                         perror("fedback error!\n");
                     }
