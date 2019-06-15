@@ -5,14 +5,15 @@ TARGETS = $(patsubst %.c, %, $(SOURCE))
 CC = gcc
 #CROSS = arm-linux-gnueabihf-
 
+INC = -I./
 
-all: find listen
+all: find
 
 find: find.c
-	$(CC) -o find find.c -lpthread
+	$(CC) $(INC) -o find find.c -lpthread 
 
-listen: listen.c
-	$(CROSS)$(CC) -o listen listen.c
+#listen: listen.c
+#	$(CROSS)$(CC) $(INC) -o listen listen.c 
 
 
 clean: 
