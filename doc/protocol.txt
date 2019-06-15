@@ -1,0 +1,37 @@
+Central Server(中心服务器):
+    HeartbeatService: 
+        Central heartbeat service, to record which device is online.
+        Every 5 second send a boardcast message. If the device is online, it should feedback a heartbeat message. If no response 3 times, the device is offline.
+        
+        Boardcast msg: 
+            Byte0: 0x0A Boardcast head 
+            Byte1: 0x01 Find
+            Byte2: Unused
+            Byte3: Unused
+        Response msg: 
+            Byte0: 0x0A Boardcast head 
+            Byte1: 0x02 Response 
+            Byte2: Device type. 0x01-Lamp 0x02-Camera
+            Byte3: Device ID
+            Byte4: 0x00 Offline, 0x01 Online
+            Byte5: Len
+            Byte[6:6+len]: Device Name
+            ...
+
+Lamp
+    Byte0: 0x0C
+    Byte1: 0x01 Instant, 0x02 Crontab
+        Instant
+            Byte2: 0x01 On, 0x02 Off
+        Crontab
+            Byte2: 0x01 On, 0x02 Off
+            Byte3: Time Hour
+            Byte4: Time Minutes
+            Byte5: 0x01 On, 0x02 Off
+            Byte6: Time Hour
+            Byte7: Time Minutes 
+        
+        
+        
+        
+        
