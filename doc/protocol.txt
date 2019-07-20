@@ -1,4 +1,4 @@
-Central Server(中心服务器):
+Central Server:
     HeartbeatService: 
         Central heartbeat service, to record which device is online.
         Every 5 second send a boardcast message. If the device is online, it should feedback a heartbeat message. If no response 3 times, the device is offline.
@@ -18,11 +18,12 @@ Central Server(中心服务器):
             Byte[6:6+len]: Device Name
             ...
 
-Raspberry to Lamp
-    Discription: Raspberry send a command to control a lamp on or off.
-                 The lamp respond a msg if everything is ok.
-    Byte0: 0x0C Led control msg head
-    Byte1: 0x01 Instant, 0x02 Crontab
+    LampControlService:
+        Raspberry send a command to control a lamp on or off.
+        The lamp respond a msg if everything is ok.
+        
+		Byte0: 0x0C Led control msg head
+        Byte1: 0x01 Instant, 0x02 Crontab
         Instant
             Byte2: 0x01 On, 0x02 Off
         Crontab
@@ -32,18 +33,30 @@ Raspberry to Lamp
             Byte5: 0x01 On, 0x02 Off
             Byte6: Time Hour
             Byte7: Time Minutes 
-    Lamp Respond: 0x0C 0x00 Means everything is ok.
-                  0x0C 0x-- Means something happend.
+        Lamp response: 0x0C len 0x00 Means everything is ok.
+                       0x0C len 0x-- Means something happend.
         
-Raspberry to STB
-    Discription: Raspberry send a command to STB for play a video by tcp protocol.
-                 STB mount to the samba server and play the video.
-    Byte0: 0x70 Play video msg head
-    Byte1: Len
-    Byte2-Byte2+len: Video file name
-    
-    STB respond: 0x70 0x00 Means everything is ok.
-                 0x70 0x-- Means something happend.
-
+    StbControlService:
+        Raspberry send a command to STB for play a video by tcp protocol or other commands.
+        STB mount to the samba server and play the video.
         
-        
+		Byte0: 0x0D STB control msg head
+        Byte1: Msg Tpye: 0x00 play a video
+                         0x01 Standby
+                         0x-- Other functions
+        Byte2: Len (Tpye = 0x00)
+            Byte3-Byte3+len: Video file name
+ 
+        Byte2: 0x01 Instant, 0x02 Crontab (Type = 0x01)
+        Instant
+            Byte3: 0x01 On, 0x02 Standby
+        Crontab
+            Byte3: 0x01 On, 0x02 Off
+            Byte4: Time Hour
+            Byte5: Time Minutes
+            Byte6: 0x01 On, 0x02 Off
+            Byte7: Time Hour
+            Byte8: Time Minutes 
+         
+	 STB response: 0x0D len 0x00 Means everything is ok.
+                       0x0D len 0x-- Means something happend.	
